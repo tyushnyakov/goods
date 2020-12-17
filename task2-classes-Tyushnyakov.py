@@ -2,6 +2,7 @@
 # and outputs their total number, mean price,
 # the most expensive product name and price,
 # name and quantity for the least item.
+from statistics import stdev
 
 
 class GoodInfo:
@@ -21,12 +22,6 @@ class GoodInfo:
         self.count = count
         self.cost = cost
 
-    def __str__(self):
-        return f'{self.name}'
-
-    def __repr__(self):
-        return f'{self.name}'
-
 
 class GoodInfoList:
     """
@@ -35,7 +30,8 @@ class GoodInfoList:
         Realizes methods: get most expensive goods; get cheapest goods;
         get end product list; sort goods list by the name, count or cost;
         add product; remove product; remove most expensive product;
-        get product by the index.
+        get product by the index; get standard deviation of prices;
+        remove last product.
 
         :param goods: list of goods
         :type goods: list
@@ -46,6 +42,12 @@ class GoodInfoList:
 
     def __getitem__(self, goods_number):
         return self.goods[goods_number]
+
+    def __len__(self):
+        return len(self.goods)
+
+    def get_std(self):
+        return stdev([x.cost for x in self.goods])
 
     def sort_goods(self, sort_key):
         if sort_key == 'name':
@@ -76,6 +78,9 @@ class GoodInfoList:
 
     def remove_expensive(self):
         self.sort_goods('cost')
+        self.goods.pop()
+
+    def remove_last(self):
         self.goods.pop()
 
 
