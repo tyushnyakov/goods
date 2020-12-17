@@ -1,13 +1,13 @@
 # GOODS
 Python project for processing goods information
 
-- [About][1]
+- [About](#1)
 - [Class GoodInfo][2]
 - [Class GoodInfoList][3]
 - [Function get_data][4]
 - [Function create_good_info][5]
 
-## [1]: About
+## <a name="1">About</a>
 This program processes text file with goods data
 and outputs their total number, mean price,
 the most expensive product name and price,
