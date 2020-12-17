@@ -1,15 +1,19 @@
 # GOODS
-python project for processing goods information
+Python project for processing goods information
 
-[TOC]
+- [About][1]
+- [Class GoodInfo][2]
+- [Class GoodInfoList][3]
+- [Function get_data][4]
+- [Function create_good_info][5]
 
-## About
+## [1]About
 This program processes text file with goods data
 and outputs their total number, mean price,
 the most expensive product name and price,
 name and quantity for the least item.
 
-## Class GoodInfo
+## [2]Class GoodInfo
 Creates instance of goods with name, quantity and price properties.
 
     :param name: name of product
@@ -19,7 +23,7 @@ Creates instance of goods with name, quantity and price properties.
     :param cost: price of product
     :type cost: float
   
-## Class GoodInfoList
+## [3]Class GoodInfoList
  Processes list of goods with name, quantity and price properties.
 
         Realizes methods: get most expensive goods; get cheapest goods;
@@ -30,7 +34,7 @@ Creates instance of goods with name, quantity and price properties.
         :param goods: list of goods
         :type goods: list
         
-## Function get_data
+## [4]Function get_data
 This function gets data from the text file and returns list of goods
 
     :param data_file: path to file
@@ -38,7 +42,7 @@ This function gets data from the text file and returns list of goods
     :return: returns list of GoodInfo objects
     :rtype: list of objects
     
-## Function create_good_info
+## [5]Function create_good_info
 This function transforms string row to instance of GoodInfo object
 
     :param good_info_list: processed list of GoodInfo objects
