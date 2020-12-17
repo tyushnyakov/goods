@@ -7,7 +7,7 @@ Python project for processing goods information
 - [Function get_data][4]
 - [Function create_good_info][5]
 
-## [1]About
+## [1]: About
 This program processes text file with goods data
 and outputs their total number, mean price,
 the most expensive product name and price,
