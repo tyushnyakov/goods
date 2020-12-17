@@ -2,10 +2,10 @@
 Python project for processing goods information
 
 - [About](#1)
-- [Class GoodInfo][2]
-- [Class GoodInfoList][3]
-- [Function get_data][4]
-- [Function create_good_info][5]
+- [Class GoodInfo](#2)
+- [Class GoodInfoList](#3)
+- [Function get_data](#4)
+- [Function create_good_info](#5)
 
 ## <a name="1">About</a>
 This program processes text file with goods data
@@ -13,7 +13,7 @@ and outputs their total number, mean price,
 the most expensive product name and price,
 name and quantity for the least item.
 
-## [2]Class GoodInfo
+## <a name="2">Class GoodInfo</a>
 Creates instance of goods with name, quantity and price properties.
 
     :param name: name of product
@@ -23,7 +23,7 @@ Creates instance of goods with name, quantity and price properties.
     :param cost: price of product
     :type cost: float
   
-## [3]Class GoodInfoList
+## <a name="3">Class GoodInfoList</a>
  Processes list of goods with name, quantity and price properties.
 
         Realizes methods: get most expensive goods; get cheapest goods;
@@ -34,7 +34,7 @@ Creates instance of goods with name, quantity and price properties.
         :param goods: list of goods
         :type goods: list
         
-## [4]Function get_data
+## <a name="4">Function get_data</a>
 This function gets data from the text file and returns list of goods
 
     :param data_file: path to file
@@ -42,7 +42,7 @@ This function gets data from the text file and returns list of goods
     :return: returns list of GoodInfo objects
     :rtype: list of objects
     
-## [5]Function create_good_info
+## <a name="5">Function create_good_info</a>
 This function transforms string row to instance of GoodInfo object
 
     :param good_info_list: processed list of GoodInfo objects
