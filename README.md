@@ -1,5 +1,7 @@
-# goods
+# GOODS
 python project for processing goods information
+
+[TOC]
 
 ## About
 This program processes text file with goods data
