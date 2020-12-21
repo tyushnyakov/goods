@@ -12,9 +12,9 @@ Good_info module contains all logic.
 Entry point is __reporter.py__.
 
 ## <a name="2">module good_info</a>
-Includes 2 classes: GoodInfo and GoodInfoList.
+Includes 2 classes: __GoodInfo__ and __GoodInfoList__.
 
-###GoodInfo
+### GoodInfo
 Creates instance of goods with name, quantity, price,
 delivery date and expiration date properties.
 
@@ -29,7 +29,7 @@ delivery date and expiration date properties.
     :param expiration: product expiration date as integer days
     :type cost: int
 
-###GoodInfoList
+### GoodInfoList
 Processes list of goods with name, quantity, price, delivery date
 and expiration date properties.Realizes methods: get most expensive goods;
 get cheapest goods; get end product list; sort goods list by the name,
