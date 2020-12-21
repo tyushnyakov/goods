@@ -7,7 +7,7 @@ Python project for processing goods information
 
 ## <a name="1">About</a>
 This programm processes text file with goods data.
-It consists from two modules: good_info.py and reporter.py and text file goods2.info.
+It consists from two modules: __good_info.py__ and __reporter.py__ and text file __goods2.info__.
 Good_info module contains all logic.
 Entry point is reporter.py.
 
