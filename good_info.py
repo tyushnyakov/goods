@@ -24,11 +24,11 @@ class GoodInfo:
     :type cost: int
     """
 
-    def __init__(self, name, cost, count, delivery, expiration):
+    def __init__(self, name, cost, count, delivery_date, expiration_time):
         """
-        Initialize instance of class with name, cost, count, delivery
+        Initialize instance of class with name, cost, count, delivery date
 
-        and price properties.
+        and expiration time properties.
 
         :param name: name of product
         :type name: str
@@ -36,24 +36,25 @@ class GoodInfo:
         :type name: int
         :param cost: price of product
         :type cost: float
-        :param delivery: product delivery date
+        :param delivery_date: product delivery date
         :type cost: str
-        :param expiration: product expiration date as integer days
+        :param expiration_time: product expiration date as integer days
         :type cost: int
         """
         self.name = name
         self.cost = cost
         self.count = count
-        self.delivery = date.fromisoformat(delivery)
-        if self.delivery < date.today():
+        self.delivery_date = date.fromisoformat(delivery_date)
+        if self.delivery_date < date.today():
             print('Ошибка! Дата поставки меньше текущей!')
-        self.expiration = timedelta(days=expiration)
+        self.expiration_time = timedelta(days=expiration_time)
 
     def __str__(self):
         return "Товар:{name} Цена: {cost} Количество: {count} "\
-               "Поставка: {delivery} Срок годности {expiration}"\
+               "Поставка: {delivery} Срок годности {expiration} дней"\
                .format(name=self.name, cost=self.cost, count=self.count,
-                       delivery=self.delivery, expiration=self.expiration)
+                       delivery=self.delivery_date,
+                       expiration=self.expiration_time.days)
 
 
 class GoodInfoList:
@@ -63,7 +64,8 @@ class GoodInfoList:
     and expiration date properties.Realizes methods: get most expensive goods;
     get cheapest goods; get end product list; sort goods list by the name,
     count or cost; add product; remove product; remove most expensive product;
-    get product by the index; get standard deviation of prices; remove last product.
+    get product by the index; get standard deviation of prices;
+    remove last product.
 
     :param goods: list of goods
     :type goods: list
@@ -118,7 +120,8 @@ class GoodInfoList:
             if len(list_row) < 5:
                 print("Нет данных о товаре")
                 continue
-            elif any(x.name == list_row[0] for x in self.goods):
+            elif any(x.name == list_row[0]
+                     and x.delivery_date == list_row[3] for x in self.goods):
                 print("Такой товар уже есть!")
                 continue
             elif not list_row[1].isdigit() or not list_row[2].isdigit():
@@ -128,9 +131,12 @@ class GoodInfoList:
             name = list_row[0]
             cost = float(list_row[1])
             count = int(list_row[2])
-            delivery = list_row[3]
-            expiration = int(list_row[4])
-            self.add(GoodInfo(name, cost, count, delivery, expiration))
+            delivery_date = list_row[3]
+            expiration_time = int(list_row[4])
+            if date.fromisoformat(delivery_date) < date.today():
+                continue
+            self.add(GoodInfo(name, cost, count,
+                              delivery_date, expiration_time))
 
     def get_expired(self):
         """
@@ -141,7 +147,7 @@ class GoodInfoList:
         """
         expired = []
         for product in self.goods:
-            if product.delivery + product.expiration < date.today():
+            if product.delivery_date + product.expiration_time < date.today():
                 expired.append(product)
                 self.goods.remove(product)
         return GoodInfoList(expired)
