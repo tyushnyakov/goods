@@ -4,6 +4,7 @@
 # name and quantity for the least item.
 from statistics import stdev
 from datetime import date, timedelta
+import logging
 
 
 class GoodInfo:
@@ -47,6 +48,7 @@ class GoodInfo:
         self.delivery_date = date.fromisoformat(delivery_date)
         if self.delivery_date < date.today():
             print('Ошибка! Дата поставки меньше текущей!')
+            logging.error('Ошибка! Дата поставки меньше текущей!')
         self.expiration_time = timedelta(days=expiration_time)
 
     def __str__(self):
@@ -119,13 +121,16 @@ class GoodInfoList:
             list_row = row.split(":")
             if len(list_row) < 5:
                 print("Нет данных о товаре")
+                logging.error("Нет данных о товаре")
                 continue
             elif any(x.name == list_row[0]
                      and x.delivery_date == list_row[3] for x in self.goods):
                 print("Такой товар уже есть!")
+                logging.error("Такой товар уже есть!")
                 continue
             elif not list_row[1].isdigit() or not list_row[2].isdigit():
                 print("Неверный формат данных")
+                logging.error("Неверный формат данных")
                 continue
             list_row[4] = list_row[4].replace("\n", "")
             name = list_row[0]
