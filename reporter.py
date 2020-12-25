@@ -4,7 +4,7 @@ import os
 import shutil
 
 FORMAT = '%(asctime)s %(levelname)s %(filename)s - %(funcName)s - %(message)s'
-logging.basicConfig(filename="goods.log", filemode='w', level=logging.INFO, format=FORMAT)
+logging.basicConfig(filename="goods.log", filemode='a', level=logging.INFO, format=FORMAT)
 
 
 def main():
@@ -17,10 +17,8 @@ def main():
     elif not os.path.isfile(file_path):
         print('Зто не файл')
         logging.error('{} - не файл'.format(file_path))
-    try:
-        with open(file_path) as file:
-            shutil.copy(file_path, 'data')
-
+    else:
+        shutil.copy(file_path, 'data')
         goods_list = GoodInfoList()
         goods_list.add_from_file(file_path)
 
@@ -31,10 +29,6 @@ def main():
         print("Просроченные товары - \n {}".format(goods_list.get_expired()))
         print(goods_list['свинина 1кг'])
         logging.info('Program finished')
-
-    except FileNotFoundError:
-        print('Не удалось открыть файл')
-        logging.error('Не удалось открыть файл {}'.format(file_path))
 
 
 if __name__ == '__main__':

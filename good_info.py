@@ -113,10 +113,15 @@ class GoodInfoList:
         :param data_file: path to file
         :type data_file: string
         """
-        open_file = open(data_file, "r", encoding="utf-8")
-        rows = open_file.readlines()
-        open_file.close()
-        if len(rows) == 0:
+        try:
+            open_file = open(data_file, "r", encoding="utf-8")
+            rows = open_file.readlines()
+            open_file.close()
+        except Exception:
+            print('Не удалось открыть файл')
+            logging.error('Не удалось открыть файл {}'.format(open_file))
+
+        if not rows or len(rows) == 0:
             print('Пустой файл!')
             logging.error('Пустой файл!')
             return
