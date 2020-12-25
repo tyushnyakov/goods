@@ -116,7 +116,10 @@ class GoodInfoList:
         open_file = open(data_file, "r", encoding="utf-8")
         rows = open_file.readlines()
         open_file.close()
-
+        if len(rows) == 0:
+            print('Пустой файл!')
+            logging.error('Пустой файл!')
+            return
         for row in rows:
             list_row = row.split(":")
             if len(list_row) < 5:
@@ -126,11 +129,11 @@ class GoodInfoList:
             elif any(x.name == list_row[0]
                      and x.delivery_date == list_row[3] for x in self.goods):
                 print("Такой товар уже есть!")
-                logging.error("Такой товар уже есть!")
+                logging.error("{} - Такой товар уже есть!".format(list_row[0]))
                 continue
             elif not list_row[1].isdigit() or not list_row[2].isdigit():
                 print("Неверный формат данных")
-                logging.error("Неверный формат данных")
+                logging.error("Неверный формат данных для {}".format(list_row[0]))
                 continue
             list_row[4] = list_row[4].replace("\n", "")
             name = list_row[0]
@@ -139,6 +142,8 @@ class GoodInfoList:
             delivery_date = list_row[3]
             expiration_time = int(list_row[4])
             if date.fromisoformat(delivery_date) < date.today():
+                logging.error('Ошибка! Дата поставки {date} для {name} меньше текущей!'
+                              .format(date=delivery_date, name=name))
                 continue
             self.add(GoodInfo(name, cost, count,
                               delivery_date, expiration_time))
@@ -164,6 +169,8 @@ class GoodInfoList:
         :return: mean price of goods in list
         :rtype: float
         """
+        if len(self.goods) == 0:
+            return 0
         return sum([item.cost for item in self.goods]) / len(self.goods)
 
     def get_std(self):
@@ -200,9 +207,10 @@ class GoodInfoList:
         :rtype: list
         """
         self.sort_goods('cost')
-        highest_cost = self.goods[-1].cost
-        goods = [x for x in self.goods if x.cost == highest_cost]
-        return GoodInfoList(goods)
+        if len(self.goods) > 0:
+            highest_cost = self.goods[-1].cost
+            goods = [x for x in self.goods if x.cost == highest_cost]
+            return GoodInfoList(goods)
 
     def get_cheapest(self):
         """
@@ -223,10 +231,11 @@ class GoodInfoList:
         :return: ending goods list
         :rtype: list
         """
-        self.sort_goods('count')
-        minimal_count = self.goods[0].count
-        goods = [x for x in self.goods if x.count == minimal_count]
-        return GoodInfoList(goods)
+        if len(self.goods) > 0:
+            self.sort_goods('count')
+            minimal_count = self.goods[0].count
+            goods = [x for x in self.goods if x.count == minimal_count]
+            return GoodInfoList(goods)
 
     def add(self, product):
         """
@@ -235,7 +244,15 @@ class GoodInfoList:
         :param product: product to add as instance of GoodInfo
         :type product: object
         """
-        self.goods.append(product)
+        if product.delivery_date < date.today():
+            print('Ошибка! Дата поставки меньше текущей!')
+            logging.error('Ошибка! Дата поставки {date} для {name} меньше текущей!'
+                          .format(date=product.delivery_date, name=product.name))
+        elif product.delivery_date + product.expiration_time < date.today():
+            print('Товар просрочен!')
+            logging.error('Товар {name} просрочен!'.format(name=product.name))
+        else:
+            self.goods.append(product)
 
     def remove(self, name):
         """
