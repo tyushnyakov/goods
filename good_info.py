@@ -25,11 +25,12 @@ class GoodInfo:
     :type cost: int
     """
 
-    def __init__(self, name, cost, count, delivery_date, expiration_time):
+    def __init__(self, name, cost, count, made_date,
+                 delivery_date, expiration_time):
         """
-        Initialize instance of class with name, cost, count, delivery date
+        Initialize instance of class with name, cost, count,
 
-        and expiration time properties.
+        made abd delivery dates, expiration time properties.
 
         :param name: name of product
         :type name: str
@@ -37,6 +38,8 @@ class GoodInfo:
         :type name: int
         :param cost: price of product
         :type cost: float
+        :param made_date: product made date
+        :type cost: str
         :param delivery_date: product delivery date
         :type cost: str
         :param expiration_time: product expiration date as integer days
@@ -45,17 +48,15 @@ class GoodInfo:
         self.name = name
         self.cost = cost
         self.count = count
+        self.made_date = date.fromisoformat(made_date)
         self.delivery_date = date.fromisoformat(delivery_date)
-        if self.delivery_date < date.today():
-            print('Ошибка! Дата поставки меньше текущей!')
-            logging.error('Ошибка! Дата поставки меньше текущей!')
         self.expiration_time = timedelta(days=expiration_time)
 
     def __str__(self):
-        return "Товар:{name} Цена: {cost} Количество: {count} "\
-               "Поставка: {delivery} Срок годности {expiration} дней"\
+        return "Товар:{name} Цена: {cost} Количество: {count} Произведен:"\
+               "{made} Поставка: {delivery} Срок годности {expiration} дней"\
                .format(name=self.name, cost=self.cost, count=self.count,
-                       delivery=self.delivery_date,
+                       made=self.made_date, delivery=self.delivery_date,
                        expiration=self.expiration_time.days)
 
 
@@ -73,7 +74,7 @@ class GoodInfoList:
     :type goods: list
     """
 
-    def __init__(self, goods=[]):
+    def __init__(self, goods=[], revenue=0):
         """
         Initialize instance of class from list of GoodInfo objects
 
@@ -81,6 +82,7 @@ class GoodInfoList:
         :type goods: list
         """
         self.goods = goods
+        self.revenue = revenue
 
     def __str__(self):
         return '\n'.join(str(item) for item in self.goods)
@@ -127,30 +129,22 @@ class GoodInfoList:
             return
         for row in rows:
             list_row = row.split(":")
-            if len(list_row) < 5:
+            if len(list_row) < 6:
                 print("Нет данных о товаре")
                 logging.error("Нет данных о товаре")
-                continue
-            elif any(x.name == list_row[0]
-                     and x.delivery_date == list_row[3] for x in self.goods):
-                print("Такой товар уже есть!")
-                logging.error("{} - Такой товар уже есть!".format(list_row[0]))
                 continue
             elif not list_row[1].isdigit() or not list_row[2].isdigit():
                 print("Неверный формат данных")
                 logging.error("Неверный формат данных для {}".format(list_row[0]))
                 continue
-            list_row[4] = list_row[4].replace("\n", "")
+            list_row[5] = list_row[5].replace("\n", "")
             name = list_row[0]
             cost = float(list_row[1])
             count = int(list_row[2])
-            delivery_date = list_row[3]
-            expiration_time = int(list_row[4])
-            if date.fromisoformat(delivery_date) < date.today():
-                logging.error('Ошибка! Дата поставки {date} для {name} меньше текущей!'
-                              .format(date=delivery_date, name=name))
-                continue
-            self.add(GoodInfo(name, cost, count,
+            made_date = list_row[3]
+            delivery_date = list_row[4]
+            expiration_time = int(list_row[5])
+            self.add(GoodInfo(name, cost, count, made_date,
                               delivery_date, expiration_time))
 
     def get_expired(self):
@@ -162,7 +156,7 @@ class GoodInfoList:
         """
         expired = []
         for product in self.goods:
-            if product.delivery_date + product.expiration_time < date.today():
+            if product.made_date + product.expiration_time < date.today():
                 expired.append(product)
                 self.goods.remove(product)
         return GoodInfoList(expired)
@@ -202,6 +196,8 @@ class GoodInfoList:
             self.goods.sort(key=lambda x: x.cost)
         if sort_key == 'count':
             self.goods.sort(key=lambda x: x.count)
+        if sort_key == 'made':
+            self.goods.sort(key=lambda x: x.made_date)
         return self
 
     def get_expensive(self):
@@ -242,6 +238,15 @@ class GoodInfoList:
             goods = [x for x in self.goods if x.count == minimal_count]
             return GoodInfoList(goods)
 
+    def is_in(self, product):
+        check = self[product.name]
+        if isinstance(check, GoodInfo):
+            if product.delivery_date == check.delivery_date:
+                return True
+        else:
+            if product.delivery_date in [x.delivery_date for x in check]:
+                return True
+
     def add(self, product):
         """
         This method add product to the goods list
@@ -249,11 +254,28 @@ class GoodInfoList:
         :param product: product to add as instance of GoodInfo
         :type product: object
         """
-        if product.delivery_date < date.today():
+        if not product.name:
+            print('Ошибка! Нет названия товара!')
+            logging.error('Ошибка! Нет названия товара!')
+        elif product.cost < 0:
+            print('Ошибка! Отрицательная цена!')
+            logging.error('Ошибка! Отрицательная цена {}!'
+                          .format(product.name))
+        elif product.count <= 0:
+            print('Ошибка! Количество должно быть > 0!')
+            logging.error('Ошибка! Количество {} должно быть > 0!'
+                          .format(product.name))
+        elif product.delivery_date < date.today():
             print('Ошибка! Дата поставки меньше текущей!')
             logging.error('Ошибка! Дата поставки {date} для {name} меньше текущей!'
                           .format(date=product.delivery_date, name=product.name))
-        elif product.delivery_date + product.expiration_time < date.today():
+        elif self.is_in(product):
+            print('Такой товар уже есть!')
+            logging.error('{} - такой товар уже есть!'.format(product.name))
+        elif product.expiration_time.days < 0:
+            print('Срок годности < 0!')
+            logging.error('Срок годности {name} < 0!'.format(name=product.name))
+        elif product.made_date + product.expiration_time < date.today():
             print('Товар просрочен!')
             logging.error('Товар {name} просрочен!'.format(name=product.name))
         else:
@@ -286,3 +308,48 @@ class GoodInfoList:
         :rtype: object
         """
         return self.goods.pop()
+
+    def sell(self, name, count):
+        """
+        This method changes GoodInfoList with selling goods.
+
+        Accepts two parameters: selling product name and count.
+        Reduces the count of selling product, increases total revenue.
+        Earlier made date goods are first for sale.
+        Returns sell revenue.
+
+        :param: name: selling product name
+        :type: name: str
+        :param: count: selling product count
+        :type: count: int
+        :return: sell revenue
+        :rtype: float
+        """
+        if isinstance(self[name], GoodInfo):
+            total_count = self[name].count
+            selling_goods = GoodInfoList([self[name]])
+        else:
+            selling_goods = self[name].sort_goods('made')
+            counts = [x.count for x in selling_goods.goods]
+            total_count = sum(counts)
+        if not selling_goods or total_count == 0:
+            print("Нет товара!")
+            logging.info("Нет товара {}".format(name))
+            return None
+        if count > total_count:
+            print("Не хватает количества товара!")
+            logging.info("Не хватает количества товара {}".format(name))
+            return None
+        sell_revenue = 0
+        sell_count = count
+        for item in selling_goods.goods:
+            if item.count >= sell_count:
+                item.count -= sell_count
+                sell_revenue += sell_count * item.cost
+                break
+            if item.count < sell_count:
+                sell_count -= item.count
+                sell_revenue += item.count * item.cost
+                item.count = 0
+        self.revenue += sell_revenue
+        return sell_revenue
