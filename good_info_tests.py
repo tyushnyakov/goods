@@ -35,18 +35,16 @@ class GoodInfoTest(unittest.TestCase):
     def test_ending(self):
         goods_list = GoodInfoList([])
         goods_list.add_from_file('goods2.info')
-        self.assertEqual(str(goods_list.get_ending()),
-                         'Товар:пирожки с картошкой Цена: 30.0 '
-                         'Количество: 2 Произведен:2020-12-30 '
-                         'Поставка: 2020-12-30 Срок годности 7 дней')
+        self.assertEqual(goods_list.get_ending()[0],
+                         GoodInfo('пирожки с картошкой', 30.0, 2,
+                                  '2020-12-30', '2020-12-30', 7))
 
     def test_sort(self):
         goods_list = GoodInfoList([])
         goods_list.add_from_file('goods2.info')
-        self.assertEqual(str(goods_list.sort_goods('name')[0]),
-                         'Товар:Чай зеленый Lipton 10 пак. Цена: 60.0 '
-                         'Количество: 20 Произведен:2020-12-30 '
-                         'Поставка: 2020-12-30 Срок годности 1080 дней')
+        self.assertEqual(goods_list.sort_goods('name')[0],
+                         GoodInfo('Чай зеленый Lipton 10 пак.', 60.0,
+                                  20, '2020-12-30', '2020-12-30',1080))
 
     def test_without_name(self):
         goods_list = GoodInfoList([])
@@ -89,6 +87,15 @@ class GoodInfoTest(unittest.TestCase):
         self.assertNotEqual(goods_list[-1],
                             GoodInfo('хлеб', 10, -10,
                                      '2020-12-30', '2020-12-30', 30))
+
+    def test_zero_count(self):
+        goods_list = GoodInfoList([])
+        goods_list.add_from_file('goods2.info')
+        goods_list.add(GoodInfo('хлеб', 10, 0, '2020-12-30',
+                                '2020-12-30', 30))
+        self.assertNotEqual(goods_list[-1],
+                            GoodInfo('хлеб', 10, 0, '2020-12-30',
+                                     '2020-12-30', 30))
 
     def test_remove(self):
         goods_list = GoodInfoList([])

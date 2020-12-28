@@ -36,6 +36,7 @@ def main():
         # goods_list.add(GoodInfo('хлеб', 10, 10, '2020-12-20', '2020-12-30', 30))
         # print(goods_list[-1])
         # print(goods_list.remove_expensive())
+        print(goods_list.get_ending())
 
 
 if __name__ == '__main__':

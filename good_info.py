@@ -52,6 +52,12 @@ class GoodInfo:
         self.delivery_date = date.fromisoformat(delivery_date)
         self.expiration_time = timedelta(days=expiration_time)
 
+    def __eq__(self, other):
+        return self.name == other.name and self.cost == other.cost and\
+            self.count == other.count and self.made_date == other.made_date\
+            and self.delivery_date == other.delivery_date\
+            and self.expiration_time == other.expiration_time
+
     def __str__(self):
         return "Товар:{name} Цена: {cost} Количество: {count} Произведен:"\
                "{made} Поставка: {delivery} Срок годности {expiration} дней"\
