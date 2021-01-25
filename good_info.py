@@ -5,6 +5,7 @@
 from statistics import stdev
 from datetime import date, timedelta
 import logging
+from good_db import add_to_db, drop_from_db, update_count_db
 
 
 class GoodInfo:
@@ -19,18 +20,18 @@ class GoodInfo:
     :type name: int
     :param cost: price of product
     :type cost: float
-    :param delivery: product delivery date
+    :param delivery_date: product delivery date
     :type cost: str
-    :param expiration: product expiration date as integer days
+    :param expiration_time: product expiration date as integer days
     :type cost: int
     """
 
     def __init__(self, name, cost, count, made_date,
-                 delivery_date, expiration_time):
+                 delivery_date, expiration_time, provider):
         """
         Initialize instance of class with name, cost, count,
 
-        made abd delivery dates, expiration time properties.
+        made abd delivery dates, expiration time, provider  properties.
 
         :param name: name of product
         :type name: str
@@ -44,6 +45,8 @@ class GoodInfo:
         :type cost: str
         :param expiration_time: product expiration date as integer days
         :type cost: int
+        :param provider: provider of product
+        :type name: str
         """
         self.name = name
         self.cost = cost
@@ -51,24 +54,27 @@ class GoodInfo:
         self.made_date = date.fromisoformat(made_date)
         self.delivery_date = date.fromisoformat(delivery_date)
         self.expiration_time = timedelta(days=expiration_time)
+        self.provider = provider
 
     def __eq__(self, other):
         return self.name == other.name and self.cost == other.cost and\
             self.count == other.count and self.made_date == other.made_date\
             and self.delivery_date == other.delivery_date\
-            and self.expiration_time == other.expiration_time
+            and self.expiration_time == other.expiration_time\
+            and self.provider == other.provider
 
     def __str__(self):
         return "Товар:{name} Цена: {cost} Количество: {count} Произведен:"\
-               "{made} Поставка: {delivery} Срок годности {expiration} дней"\
+               "{made} Поставка: {delivery} Срок годности {expiration} дней "\
+               "Поставщик: {provider}"\
                .format(name=self.name, cost=self.cost, count=self.count,
                        made=self.made_date, delivery=self.delivery_date,
-                       expiration=self.expiration_time.days)
+                       expiration=self.expiration_time.days, provider=self.provider)
 
 
 class GoodInfoList:
     """
-    Processes list of goods with name, quantity, price, delivery date
+    Processes list of goods with name, provider, quantity, price, delivery date
 
     and expiration date properties.Realizes methods: get most expensive goods;
     get cheapest goods; get end product list; sort goods list by the name,
@@ -135,7 +141,7 @@ class GoodInfoList:
             return
         for row in rows:
             list_row = row.split(":")
-            if len(list_row) < 6:
+            if len(list_row) < 7:
                 print("Нет данных о товаре")
                 logging.error("Нет данных о товаре")
                 continue
@@ -143,15 +149,16 @@ class GoodInfoList:
                 print("Неверный формат данных")
                 logging.error("Неверный формат данных для {}".format(list_row[0]))
                 continue
-            list_row[5] = list_row[5].replace("\n", "")
+            list_row[6] = list_row[6].replace("\n", "")
             name = list_row[0]
             cost = float(list_row[1])
             count = int(list_row[2])
             made_date = list_row[3]
             delivery_date = list_row[4]
             expiration_time = int(list_row[5])
+            provider = list_row[6]
             self.add(GoodInfo(name, cost, count, made_date,
-                              delivery_date, expiration_time))
+                              delivery_date, expiration_time, provider))
 
     def get_expired(self):
         """
@@ -284,17 +291,25 @@ class GoodInfoList:
         elif product.made_date + product.expiration_time < date.today():
             print('Товар просрочен!')
             logging.error('Товар {name} просрочен!'.format(name=product.name))
+        elif not product.provider:
+            print('Ошибка! Нет поставщика товара!')
+            logging.error('Ошибка! Нет поставщика товара!')
         else:
             self.goods.append(product)
+            add_to_db(product)
 
-    def remove(self, name):
+    def remove(self, name, made_date):
         """
         This method remove product from the goods list
 
         :param name: product name to remove
         :type name: str
+        :param made_date: product delivery date
+        :type made_date: date
         """
-        self.goods = [item for item in self.goods if item.name != name]
+        self.goods = [item for item in self.goods if item.name != name
+                      and item.made_date != made_date]
+        drop_from_db(name, made_date)
 
     def remove_expensive(self):
         """
@@ -304,7 +319,9 @@ class GoodInfoList:
         :rtype: object
         """
         self.sort_goods('cost')
-        return self.goods.pop()
+        expensive = self.goods.pop()
+        drop_from_db(expensive.name, expensive.made_date)
+        return expensive
 
     def remove_last(self):
         """
@@ -313,7 +330,9 @@ class GoodInfoList:
         :return: last product from the goods list
         :rtype: object
         """
-        return self.goods.pop()
+        last = self.goods.pop()
+        drop_from_db(last.name, last.made_date)
+        return last
 
     def sell(self, name, count):
         """
@@ -351,11 +370,13 @@ class GoodInfoList:
         for item in selling_goods.goods:
             if item.count >= sell_count:
                 item.count -= sell_count
+                update_count_db(item.name, item.made_date, item.count)
                 sell_revenue += sell_count * item.cost
                 break
             if item.count < sell_count:
                 sell_count -= item.count
                 sell_revenue += item.count * item.cost
                 item.count = 0
+                update_count_db(item.name, item.made_date, item.count)
         self.revenue += sell_revenue
         return sell_revenue

@@ -2,6 +2,7 @@ from good_info import GoodInfoList, GoodInfo
 import logging
 import os
 import shutil
+from good_db import create_tables
 
 FORMAT = '%(asctime)s %(levelname)s %(filename)s - %(funcName)s - %(message)s'
 logging.basicConfig(filename="goods.log", filemode='a', level=logging.INFO, format=FORMAT)
@@ -9,6 +10,8 @@ logging.basicConfig(filename="goods.log", filemode='a', level=logging.INFO, form
 
 def main():
     logging.info('Program started')
+
+    create_tables()
 
     file_path = os.path.abspath(input('Введите путь к файлу:').strip('"\''))
     if not os.path.exists(file_path):
@@ -29,6 +32,9 @@ def main():
         print("Заканчивются товары - \n {end}".format(end=goods_list.get_ending()))
         print("Просроченные товары - \n {}".format(goods_list.get_expired()))
         print(goods_list['свинина 1 кг'])
+
+    goods_list.remove_last()
+    goods_list.sell('морковь 1кг', 50)
 
     logging.info('Program finished')
 
