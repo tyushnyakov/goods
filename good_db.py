@@ -2,11 +2,12 @@ from sqlalchemy import create_engine, Column, \
     Integer, Float, String, Date, Interval, ForeignKey, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship
+import os
 
 DB_NAME = 'postgres'
 HOST_NAME = '127.0.0.1'
 USER_NAME = 'postgres'
-PASS = '666666'
+PASS = os.environ.get('CONPASS')
 
 engine = create_engine('postgresql+psycopg2://{user}:{pwd}@{host}/{dbname}'
                        .format(dbname=DB_NAME,
