@@ -1,0 +1,17 @@
+{
+    "configFile": "config.json",
+    "functions": [
+        "get_mean",
+        "file_to_db",
+        "remove_expensive",
+        "get_expired",
+        "complex_function",
+        "start_reporter"
+    ],
+    "loggingConfig": {
+        "filename": "goods.log",
+        "filemode": "a",
+        "level": "logging.INFO",
+        "format": "%(asctime)s %(levelname)s %(filename)s - %(funcName)s - %(message)s"
+    }
+}
