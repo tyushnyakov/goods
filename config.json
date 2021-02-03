@@ -1,5 +1,6 @@
 {
     "configFile": "config.json",
+    "starting_function": "start_reporter",
     "functions": [
         "get_mean",
         "file_to_db",
@@ -13,5 +14,11 @@
         "filemode": "a",
         "level": "logging.INFO",
         "format": "%(asctime)s %(levelname)s %(filename)s - %(funcName)s - %(message)s"
+    },
+    "DBConfig": {
+        "DB_NAME": "postgres",
+        "HOST_NAME": "127.0.0.1",
+        "USER_NAME": "postgres",
+        "PASS": "os.environ.get('CONPASS')"
     }
 }

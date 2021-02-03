@@ -3,9 +3,16 @@ import logging
 import os
 import shutil
 from good_db import create_tables
+import json
 
-FORMAT = '%(asctime)s %(levelname)s %(filename)s - %(funcName)s - %(message)s'
-logging.basicConfig(filename="goods.log", filemode='a', level=logging.INFO, format=FORMAT)
+with open('config.json', 'r') as config_file:
+    config_data = json.loads(config_file.read())
+
+FORMAT = config_data["loggingConfig"]["format"]
+
+logging.basicConfig(filename=config_data["loggingConfig"]["filename"],
+                    filemode=config_data["loggingConfig"]["filemode"],
+                    level=logging.INFO, format=FORMAT)
 
 
 def get_goods_list():

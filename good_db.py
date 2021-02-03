@@ -2,12 +2,16 @@ from sqlalchemy import create_engine, Column, \
     Integer, Float, String, Date, Interval, ForeignKey, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, relationship
+import json
 import os
 
-DB_NAME = 'postgres'
-HOST_NAME = '127.0.0.1'
-USER_NAME = 'postgres'
-PASS = os.environ.get('CONPASS')
+with open('config.json', 'r') as config_file:
+    config_data = json.loads(config_file.read())
+
+DB_NAME = config_data["DBConfig"]["DB_NAME"]
+HOST_NAME = config_data["DBConfig"]["HOST_NAME"]
+USER_NAME = config_data["DBConfig"]["USER_NAME"]
+PASS = eval(config_data["DBConfig"]["PASS"])
 
 engine = create_engine('postgresql+psycopg2://{user}:{pwd}@{host}/{dbname}'
                        .format(dbname=DB_NAME,
