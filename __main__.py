@@ -57,12 +57,21 @@ config = {
     }
 }
 
+functions = {"get_mean": get_mean,
+             "file_to_db": file_to_db,
+             "remove_expensive": remove_expensive,
+             "get_expired": get_expired,
+             "complex_function": complex_function,
+             "start_reporter": start_reporter}
 
 if not os.path.exists('config.json'):
     with open('config.json', 'w') as config_file:
         json.dump(config, config_file, indent=4)
 
-with open('config.json', 'r') as config_file:
-    config_data = json.loads(config_file.read())
-starting_function = config_data['starting_function']
-eval(starting_function)()
+config_data = good_db.config_data
+
+if config_data['starting_function'] in functions:
+    starting_function = functions[config_data['starting_function']]
+else:
+    starting_function = start_reporter
+starting_function()

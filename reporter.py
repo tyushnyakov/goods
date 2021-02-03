@@ -2,11 +2,7 @@ from good_info import GoodInfoList, GoodInfo
 import logging
 import os
 import shutil
-from good_db import create_tables
-import json
-
-with open('config.json', 'r') as config_file:
-    config_data = json.loads(config_file.read())
+from good_db import create_tables, config_data
 
 FORMAT = config_data["loggingConfig"]["format"]
 
